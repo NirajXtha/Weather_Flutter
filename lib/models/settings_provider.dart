@@ -64,6 +64,8 @@ class SettingsProvider extends ChangeNotifier {
       forecast[i] = prefs.getStringList('forecast$i')?? 
           ["16.3", "64.9", "Partly Cloudy", "https://cdn.weatherapi.com/weather/64x64/day/116.png"];
     }
+
+    print(icon);
     updateData();
     notifyListeners();
   }
@@ -107,7 +109,7 @@ class SettingsProvider extends ChangeNotifier {
     tempC = data['current']['temp_c'].toString();
     tempF = data['current']['temp_f'].toString();
     condition = data['current']['condition']['text'].toString();
-    icon = data['current']['condition']['icon'].toString();
+    icon = "https:${data['current']['condition']['icon'].toString()}";
     windKph = data['current']['wind_kph'].toString();
     windMph = data['current']['wind_mph'].toString();
     windDirection = data['current']['wind_dir'].toString();
@@ -149,11 +151,10 @@ class SettingsProvider extends ChangeNotifier {
             data['forecast']['forecastday'][0]['hour'][i]['temp_f'].toString();
         var condition =
             data['forecast']['forecastday'][0]['hour'][i]['condition']['text'];
-        var icon =
-            data['forecast']['forecastday'][0]['hour'][i]['condition']['icon'];
+        var icon = "https:${data['forecast']['forecastday'][0]['hour'][i]['condition']['icon']}";
         List<String> fd = [];
         fd = [tempc, tempf, condition, icon];
-        // print(fd);
+        print(icon);
 
         prefs.setStringList('forecast$i', fd);
 

@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Image.network(
-                                settingsProvider.icon,
+                                settingsProvider.icon.toString(),
                                 width: 100,
                                 height: 100,
                               ),

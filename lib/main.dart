@@ -9,6 +9,7 @@ void main() async {
 
   // Retrieve theme preference before app starts
   final prefs = await SharedPreferences.getInstance();
+  prefs.clear();
   final isDarkMode = prefs.getBool('isDarkMode') ?? false;
 
   runApp(
