@@ -15,8 +15,6 @@ class ApiCall {
       var response = await http.get(baseUrl);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        // currentWeatherData = data['current'];
-        // forecastWeatherData = data['forecast']['forecastday'][0]['hour'];
         return data;
       } else {
         throw Exception('Failed to load weather data');
