@@ -27,21 +27,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var settingsProvider = Provider.of<SettingsProvider>(context);
-    setState(() {
-      settingsProvider = settingsProvider;
-    });
 
     Future<void> loadCurrentWeather() async {
       try {
         data = await apiCall.getWeatherData(settingsProvider.location);
         // currentWeather.getStatus();
-        setState(() {
-          isLoading = false;
-          settingsProvider.updateWeatherData(data!);
-          settingsProvider.getPreData();
-        });
+        isLoading = false;
+        settingsProvider.updateWeatherData(data!);
+        settingsProvider.getPreData();
       } catch (e) {
         rethrow;
       }
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         time = "0$index";
       }
-      if(settingsProvider.temperatureUnit == "C") {
+      if (settingsProvider.temperatureUnit == "C") {
         temp = settingsProvider.forecast[index][0];
       } else {
         temp = settingsProvider.forecast[index][1];
@@ -78,8 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Image.network(
               "${settingsProvider.forecast[index][3]}",
             ),
-            Text(
-                "$temp°${settingsProvider.temperatureUnit}",
+            Text("$temp°${settingsProvider.temperatureUnit}",
                 style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -128,10 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         IconButton(
                           icon: const Icon(Icons.send),
                           onPressed: () {
-                            setState(() {
-                              settingsProvider
-                                  .updateLocation(_locationController.text);
-                            });
+                            settingsProvider
+                                .updateLocation(_locationController.text);
                             loadCurrentWeather();
                             _locationController.clear();
                             Navigator.pop(context);
@@ -179,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 spacing: 16,
                                 children: [
                                   Text(
-                                    "${settingsProvider.temp}°${settingsProvider.temperatureUnit}",
+                                    "${settingsProvider.temp.toString()}°${settingsProvider.temperatureUnit.toString()}",
                                     style: TextStyle(
                                       fontSize: 48,
                                       fontWeight: FontWeight.bold,
@@ -191,9 +188,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   IconButton(
                                     onPressed: () async {
                                       await loadCurrentWeather();
-                                      setState(() {
-                                        isLoading = true;
-                                      });
                                     },
                                     icon: const Icon(Icons.restart_alt_rounded),
                                   ),
@@ -217,30 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          forecastWidget(0),
-                          forecastWidget(1),
-                          forecastWidget(2),
-                          forecastWidget(3),
-                          forecastWidget(4),
-                          forecastWidget(5),
-                          forecastWidget(6),
-                          forecastWidget(7),
-                          forecastWidget(8),
-                          forecastWidget(9),
-                          forecastWidget(10),
-                          forecastWidget(11),
-                          forecastWidget(12),
-                          forecastWidget(13),
-                          forecastWidget(14),
-                          forecastWidget(15),
-                          forecastWidget(16),
-                          forecastWidget(17),
-                          forecastWidget(18),
-                          forecastWidget(19),
-                          forecastWidget(20),
-                          forecastWidget(21),
-                          forecastWidget(22),
-                          forecastWidget(23),
+                          if (settingsProvider.len > 0)
+                            for (int i = 0; i < settingsProvider.len; i++)
+                              forecastWidget(i),
+                          if (settingsProvider.len == 0)
+                            CircularProgressIndicator(),
                         ],
                       ),
                     ),
@@ -257,7 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         icon: Icons.air,
                         title: "Wind Pressure",
-                        value: "${settingsProvider.windSpeed} ${settingsProvider.windSpeedUnit}",
+                        value:
+                            "${settingsProvider.windSpeed} ${settingsProvider.windSpeedUnit}",
                       ),
                       weatherCard(
                         context,
@@ -275,7 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         icon: Icons.speed,
                         title: "Pressure",
-                        value: "${settingsProvider.presssure} ${settingsProvider.pressureUnit}",
+                        value:
+                            "${settingsProvider.presssure} ${settingsProvider.pressureUnit}",
                       ),
                       weatherCard(
                         context,
@@ -287,7 +264,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         icon: Icons.remove_red_eye,
                         title: "Visibility",
-                        value: "${settingsProvider.visibility} ${settingsProvider.visibilityUnit}",
+                        value:
+                            "${settingsProvider.visibility} ${settingsProvider.visibilityUnit}",
                       ),
                     ],
                   ),

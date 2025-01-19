@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsProvider extends ChangeNotifier {
-  // TimeOfDay time = TimeOfDay.now();
-  // DateTime dateTime = DateTime.now();
+  late SharedPreferences prefs;
   String temperatureUnit = "C";
   String windSpeedUnit = "km/h";
   String pressureUnit = "hPa";
@@ -27,16 +26,65 @@ class SettingsProvider extends ChangeNotifier {
   String visibility = "7.0";
   String visibilityMiles = "4.0";
   String uv = "3.1";
-
-  List forecast = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
+  int len = 24;
+  List forecast = [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ];
   // dynamic forecastData = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},];
+
+  String get temperatureUnitName => temperatureUnit;
+  String get windSpeedUnitName => windSpeedUnit;
+  String get pressureUnitName => pressureUnit;
+  String get visibilityUnitName => visibilityUnit;
+  String get locationName => location;
+
+  String get tempName => temp;
+  String get conditionName => condition;
+  String get iconName => icon;
+  String get windSpeedName => windSpeed;
+  String get windDirectionName => windDirection;
+  String get humidityName => humidity;
+  String get presssureName => presssure;
+  String get pressureInName => pressureIn;
+  String get visibilityName => visibility;
+  String get visibilityMilesName => visibilityMiles;
+  String get uvName => uv;
+
+  int get lenName => len;
+
+  List get forecastName => forecast;
+
+  SharedPreferences get prefsName => prefs;
 
   SettingsProvider() {
     getPreData();
   }
 
-  dynamic getPreData() async {
-    final prefs = await SharedPreferences.getInstance();
+  getPreData() async {
+    prefs = await SharedPreferences.getInstance();
     temperatureUnit = prefs.getString('temperatureUnit') ?? "C";
     windSpeedUnit = prefs.getString('windSpeedUnit') ?? "km/h";
     pressureUnit = prefs.getString('pressureUnit') ?? "hPa";
@@ -59,14 +107,18 @@ class SettingsProvider extends ChangeNotifier {
     visibility = prefs.getString('visibility') ?? "7.0";
     visibilityMiles = prefs.getString('visibilityMiles') ?? "4.0";
     uv = prefs.getString('uv') ?? "3.1";
+    len = prefs.getInt("len") ?? 24;
 
-    for (int i = 0; i < 24; i++) {
-      forecast[i] = prefs.getStringList('forecast$i')?? 
-          ["16.3", "64.9", "Partly Cloudy", "https://cdn.weatherapi.com/weather/64x64/day/116.png"];
+    for (int i = 0; i < len; i++) {
+      forecast[i] = prefs.getStringList('forecast$i') ??
+          [
+            "16.3",
+            "64.9",
+            "Partly Cloudy",
+            "https://cdn.weatherapi.com/weather/64x64/day/116.png"
+          ];
     }
-
-    print(icon);
-    updateData();
+    await updateData();
     notifyListeners();
   }
 
@@ -121,8 +173,6 @@ class SettingsProvider extends ChangeNotifier {
     uv = data['current']['uv'].toString();
     updateData();
 
-    final prefs = await SharedPreferences.getInstance();
-
     prefs.setString('tempC', tempC);
     prefs.setString('tempF', tempF);
     prefs.setString('condition', condition);
@@ -136,8 +186,8 @@ class SettingsProvider extends ChangeNotifier {
     prefs.setString('visibilityKm', visibilityKm);
     prefs.setString('visibilityMiles', visibilityMiles);
     prefs.setString('uv', uv);
-
-    prefs.setInt('len', data['forecast']['forecastday'][0]['hour'].length);
+    int length = data['forecast']['forecastday'][0]['hour'].length;
+    prefs.setInt('len', length);
     try {
       int i = 0;
       while (i <= data['forecast']['forecastday'][0]['hour'].length) {
@@ -151,21 +201,17 @@ class SettingsProvider extends ChangeNotifier {
             data['forecast']['forecastday'][0]['hour'][i]['temp_f'].toString();
         var condition =
             data['forecast']['forecastday'][0]['hour'][i]['condition']['text'];
-        var icon = "https:${data['forecast']['forecastday'][0]['hour'][i]['condition']['icon']}";
+        var icon =
+            "https:${data['forecast']['forecastday'][0]['hour'][i]['condition']['icon']}";
         List<String> fd = [];
         fd = [tempc, tempf, condition, icon];
-        print(icon);
-
         prefs.setStringList('forecast$i', fd);
-
-        // print(prefs.getStringList('forecast$i'));
-
         i++;
       }
     } catch (e) {
       print("Error: $e");
     }
-    notifyListeners(); 
+    notifyListeners();
   }
 
   Future<void> updateData() async {
